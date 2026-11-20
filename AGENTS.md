@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Quiz logic (questions, progress, result) lives as pure functions in `src/lib/quiz.ts`, covered by `src/test/quiz.test.ts`; UI components only call them — keeps the rules testable.
+- Promotion details (store name, dates, prizes, steps) live only in `src/lib/promo.ts` — one place to edit campaign info.
+- The page collects no personal data and never states the user won; results show a style profile plus draw rules.
