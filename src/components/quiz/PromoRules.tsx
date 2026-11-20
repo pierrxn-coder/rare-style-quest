@@ -44,10 +44,7 @@ export function PromoRules() {
         <h3 className="mb-2 flex items-center gap-2 font-bold text-foreground">
           <CalendarDays className="size-4 shrink-0 text-primary-glow" /> Datas
         </h3>
-        <p className="text-muted-foreground">
-          Participações de <strong className="text-foreground">{PROMO.period}</strong>. Sorteio em{" "}
-          <strong className="text-foreground">{PROMO.drawDate}</strong>, {PROMO.drawHow}.
-        </p>
+        <p className="text-muted-foreground">{PROMO.datesNote}</p>
       </section>
 
       <section className="rounded-xl border border-primary/40 bg-accent/40 p-3">

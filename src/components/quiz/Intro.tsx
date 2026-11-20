@@ -43,7 +43,7 @@ export function Intro({ onStart }: { onStart: () => void }) {
         </Button>
         <RulesDrawer />
         <p className="text-center text-xs text-muted-foreground">
-          Promoção válida de {PROMO.period}. Responder o quiz não garante prêmio.
+          Seu resultado aparece na hora. Responder o quiz não garante prêmio — os ganhadores saem por sorteio.
         </p>
       </div>
     </div>
