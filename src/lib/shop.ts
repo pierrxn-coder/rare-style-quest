@@ -69,13 +69,12 @@ export function defaultSize(product: Product): string | null {
     : null;
 }
 
+// FUNÇÃO DE FUNCIONAMENTO DOS BOTÕES DE PAGAMENTO
 export function canBuy(
   product: Product,
   size: string | null,
   shoeSize: string | null
 ): boolean {
-  if (!isValidCheckout(product.checkoutUrl)) return false;
-
   return (
     size !== null &&
     product.sizes.includes(size) &&
