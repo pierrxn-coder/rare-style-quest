@@ -1,8 +1,9 @@
-import { CheckCircle2, RotateCcw, Sparkles, Truck } from "lucide-react";
+import { CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/quiz/ProgressBar";
 import { PromoRules } from "@/components/quiz/PromoRules";
+import { Shop } from "@/components/quiz/Shop";
 import { PROMO } from "@/lib/promo";
 import type { StyleProfile } from "@/lib/quiz";
 
@@ -41,19 +42,7 @@ export function Result({ profile, onRestart }: { profile: StyleProfile; onRestar
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface/60 p-5">
-        <h2 className="flex items-center gap-2 text-display text-xl">
-          <Truck className="size-5 shrink-0 text-primary-glow" /> Frete fixo na loja
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed">
-          Frete fixo de{" "}
-          <strong>
-            R$ {PROMO.shipping.feeReais} {PROMO.shipping.area}
-          </strong>{" "}
-          nas compras da {PROMO.storeName}.
-        </p>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{PROMO.shipping.scope}</p>
-      </section>
+      <Shop highlight={profile.pick} />
 
       <Button variant="ghostLine" size="touch" className="w-full" onClick={onRestart}>
         <RotateCcw /> Refazer o quiz

@@ -34,3 +34,4 @@ use the editor.
 - Quiz logic (questions, progress, result) lives as pure functions in `src/lib/quiz.ts`, covered by `src/test/quiz.test.ts`; UI components only call them — keeps the rules testable.
 - Promotion details (store name, dates, prizes, steps) live only in `src/lib/promo.ts` — one place to edit campaign info.
 - The page collects no personal data and never states the user won; results show a style profile plus draw rules.
+- Store items, prices and checkout links live in `src/lib/shop.ts` (pure rules covered by `src/test/shop.test.ts`); checkout links must charge piece + shipping together, and shipping-only links are rejected by `isValidCheckout` — keeps buying honest and separate from the draw.
