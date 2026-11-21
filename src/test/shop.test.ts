@@ -9,9 +9,9 @@ describe("store showcase", () => {
     expect(PRODUCTS.map((p) => p.priceReais)).toEqual([70, 70, 70, 70]);
   });
 
-  it("checkout total is piece + R$ 70 shipping together (R$ 140)", () => {
-    expect(SHIPPING_REAIS).toBe(70);
-    for (const p of PRODUCTS) expect(totalReais(p)).toBe(140);
+  it("shipping is free, so the checkout total is just the piece (R$ 70)", () => {
+    expect(SHIPPING_REAIS).toBe(0);
+    for (const p of PRODUCTS) expect(totalReais(p)).toBe(70);
   });
 
   it("never accepts the shipping-only checkout link", () => {

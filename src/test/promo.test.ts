@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { PROMO } from "@/lib/promo";
 
 describe("store shipping notice", () => {
-  it("states a fixed R$ 70 shipping fee for all of Brazil", () => {
-    expect(PROMO.shipping.feeReais).toBe(70);
+  it("states free shipping for all of Brazil", () => {
+    expect(PROMO.shipping.feeReais).toBe(0);
     expect(PROMO.shipping.area).toBe("para todo o Brasil");
   });
 

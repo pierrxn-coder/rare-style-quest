@@ -30,8 +30,8 @@ export function Shop({ highlight }: { highlight?: string }) {
         <div className="mt-4 flex gap-3 rounded-xl border border-primary/40 bg-accent/40 p-3 text-sm">
           <Truck className="mt-0.5 size-5 shrink-0 text-primary-glow" />
           <p className="min-w-0 leading-relaxed">
-            <strong>O pagamento cobra a peça e o frete juntos.</strong> Frete fixo de {formatReais(SHIPPING_REAIS)}{" "}
-            {PROMO.shipping.area}, já somado no total.
+            <strong>Frete grátis {PROMO.shipping.area}.</strong> O pagamento cobra só o valor da peça, sem
+            nenhuma taxa extra.
           </p>
         </div>
         <p className="mt-3 flex gap-2 text-xs leading-relaxed text-muted-foreground">
@@ -113,8 +113,10 @@ function ProductCard({ product, featured }: { product: Product; featured: boolea
           <dd>{formatReais(product.priceReais)}</dd>
         </div>
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">Frete fixo</dt>
-          <dd>{formatReais(SHIPPING_REAIS)}</dd>
+          <dt className="text-muted-foreground">Frete</dt>
+          <dd className={SHIPPING_REAIS === 0 ? "font-semibold text-success" : undefined}>
+            {SHIPPING_REAIS === 0 ? "Grátis" : formatReais(SHIPPING_REAIS)}
+          </dd>
         </div>
         <div className="flex justify-between gap-3 border-t border-border pt-1 font-bold">
           <dt>Total no pagamento</dt>

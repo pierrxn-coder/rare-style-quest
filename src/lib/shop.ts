@@ -1,7 +1,7 @@
 import { PROMO } from "@/lib/promo";
 
 // Store items sold at the end of the quiz. Buying is separate from the draw.
-// Each checkout link must charge the piece price AND the fixed shipping together.
+// Each checkout link must sell the piece itself; shipping is free (included in the same payment).
 
 export interface Product {
   id: string;
@@ -10,7 +10,7 @@ export interface Product {
   description: string;
   priceReais: number;
   sizes: string[];
-  /** Cakto link that charges piece + shipping in one payment, or null until the store sends it. */
+  /** Cakto link that sells the piece (free shipping), or null until the store sends it. */
   checkoutUrl: string | null;
 }
 
@@ -61,7 +61,7 @@ export const PRODUCTS: Product[] = [
 // A checkout that charges only shipping (no piece) is never allowed on this page.
 const SHIPPING_ONLY_CHECKOUTS = ["pay.cakto.com.br/39ekr5t_1350703"];
 
-/** Piece price plus fixed shipping, charged together in one payment. */
+/** Piece price plus shipping (currently free), charged together in one payment. */
 export function totalReais(product: Product): number {
   return product.priceReais + SHIPPING_REAIS;
 }
