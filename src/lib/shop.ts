@@ -1,98 +1,260 @@
+
+import { ExternalLink, Info, ShoppingBag, Truck } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { PROMO } from "@/lib/promo";
+import {
+  PRODUCTS,
+  SHIPPING_REAIS,
+  canBuy,
+  defaultSize,
+  formatReais,
+  isValidCheckout,
+  totalReais,
+  type Product,
+} from "@/lib/shop";
+import { cn } from "@/lib/utils";
 
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  priceReais: number;
-  sizes: string[];
-  shoeSizes: string[];
-  checkoutUrl: string | null;
+export function Shop({ highlight }: { highlight?: string }) {
+  const ordered = [...PRODUCTS].sort(
+    (a, b) => Number(b.name === highlight) - Number(a.name)
+  );
+
+  return (
+    <section aria-labelledby="loja" className="space-y-4">
+      <div className="rounded-2xl border border-border bg-surface p-5">
+        <h2 id="loja" className="flex items-center gap-2 text-display text-2xl">
+          <ShoppingBag className="size-5 shrink-0 text-primary-glow" />
+          Loja {PROMO.storeName}
+        </h2>
+
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Quer comprar uma peça? Escolha os tamanhos e continue para o pagamento.
+        </p>
+
+        <div className="mt-4 flex gap-3 rounded-xl border border-primary/40 bg-accent/40 p-3 text-sm">
+          <Truck className="mt-0.5 size-5 shrink-0 text-primary-glow" />
+          <p className="min-w-0 leading-relaxed">
+            <strong>Você paga somente o frete!</strong> O valor do envio é
+            R$ 70,00 para receber seu produto em qualquer lugar do Brasil.
+        </p>
+        </div>
+
+        <p className="mt-3 flex gap-2 text-xs leading-relaxed text-muted-foreground">
+          <Info className="mt-0.5 size-4 shrink-0" />
+          Comprar é opcional e separado do sorteio: não é preciso comprar para
+          participar, e comprar não aumenta suas chances.
+        </p>
+      </div>
+
+      <ul className="space-y-4">
+        {ordered.map((product) => (
+          <li key={product.id}>
+            <ProductCard
+              product={product}
+              featured={product.name === highlight}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
-export const SHIPPING_REAIS = 70;
+function ProductCard({
+  product,
+  featured,
+}: {
+  product: Product;
+  featured: boolean;
+}) {
+  const [size, setSize] = useState<string | null>(
+    () => defaultSize(product)
+  );
 
-const SHIRT_SIZES = ["PP", "P", "M", "G", "GG"];
+  const [shoeSize, setShoeSize] = useState<string | null>(null);
 
-const SHOE_SIZES = [
-  "36", "37", "38", "39", "40",
-  "41", "42", "43", "44"
-];
+  const linkReady = isValidCheckout(product.checkoutUrl);
 
-export const PRODUCTS: Product[] = [
-  {
-    id: "kit-quebra-fina",
-    name: "Kit quebra fina de ano 🎅🏻",
-    category: "Kit Especial",
-    description:
-      "Kit especial com 2 camisetas, boné e tênis. Consulte as condições de envio.",
-    priceReais: 70,
-    sizes: SHIRT_SIZES,
-    shoeSizes: SHOE_SIZES,
-    checkoutUrl: "https://pay.cakto.com.br/39ekr5t_1350703",
-  },
-];
+  const ready =
+    canBuy(product, size) &&
+    (product.shoeSizes.length === 0 ||
+      shoeSize !== null);
 
-const SHIPPING_ONLY_CHECKOUTS: string[] = [];
+  const single = product.sizes.length === 1;
+  const groupId = `size-${product.id}`;
+  const shoeGroupId = `shoe-size-${product.id}`;
 
-export function totalReais(product: Product): number {
-  return product.priceReais;
-}
+  return (
+    <article
+      className={cn(
+        "rounded-2xl border bg-surface p-5",
+        featured
+          ? "border-primary/60 shadow-glow"
+          : "border-border"
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-glow">
+            {featured
+              ? "Combina com seu estilo"
+              : product.category}
+          </p>
 
-export function isValidCheckout(url: string | null): url is string {
-  if (!url) return false;
+          <h3 className="text-display mt-1 text-2xl">
+            {product.name}
+          </h3>
 
-  let parsed: URL;
+          <p className="mt-1 text-sm text-muted-foreground">
+            {product.description}
+          </p>
+        </div>
 
-  try {
-    parsed = new URL(url);
-  } catch {
-    return false;
-  }
+        <p className="shrink-0 text-display text-2xl">
+          {formatReais(product.priceReais)}
+        </p>
+      </div>
 
-  if (
-    parsed.protocol !== "https:" ||
-    parsed.hostname !== "pay.cakto.com.br"
-  ) {
-    return false;
-  }
+      {/* TAMANHO DA CAMISETA */}
+      <div className="mt-4">
+        <p id={groupId} className="mb-2 text-sm font-semibold">
+          {single ? "Tamanho: único" : "Escolha o tamanho da camiseta"}
+        </p>
 
-  const bare = `${parsed.hostname}${parsed.pathname}`.replace(/\/$/, "");
+        {!single && (
+          <div
+            role="radiogroup"
+            aria-labelledby={groupId}
+            className="flex flex-wrap gap-2"
+          >
+            {product.sizes.map((s) => {
+              const active = size === s;
 
-  return !SHIPPING_ONLY_CHECKOUTS.includes(bare);
-}
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setSize(s)}
+                  className={cn(
+                    "h-12 min-w-12 rounded-xl border px-3 text-base font-semibold transition-colors active:scale-[0.97]",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background/60 text-foreground hover:bg-surface-raised"
+                  )}
+                >
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-export function defaultSize(product: Product): string | null {
-  return product.sizes.length === 1
-    ? product.sizes[0] ?? null
-    : null;
-}
+      {/* NUMERAÇÃO DO TÊNIS */}
+      {product.shoeSizes.length > 0 && (
+        <div className="mt-5">
+          <p id={shoeGroupId} className="mb-2 text-sm font-semibold">
+            Escolha a numeração do tênis
+          </p>
 
-// Corrigido: compatível com canBuy(product, size)
-export function canBuy(
-  product: Product,
-  size: string | null,
-  shoeSize?: string | null
-): boolean {
-  if (!isValidCheckout(product.checkoutUrl)) {
-    return false;
-  }
+          <div
+            role="radiogroup"
+            aria-labelledby={shoeGroupId}
+            className="flex flex-wrap gap-2"
+          >
+            {product.shoeSizes.map((s) => {
+              const active = shoeSize === s;
 
-  if (size === null || !product.sizes.includes(size)) {
-    return false;
-  }
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setShoeSize(s)}
+                  className={cn(
+                    "h-12 min-w-12 rounded-xl border px-3 text-base font-semibold transition-colors active:scale-[0.97]",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background/60 text-foreground hover:bg-surface-raised"
+                  )}
+                >
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-  if (shoeSize != null) {
-    return product.shoeSizes.includes(shoeSize);
-  }
+      {/* VALORES */}
+      <dl className="mt-4 space-y-1 rounded-xl bg-background/70 p-3 text-sm">
+        <div className="flex justify-between gap-3">
+          <dt className="text-muted-foreground">Peça</dt>
+          <dd>{formatReais(product.priceReais)}</dd>
+        </div>
 
-  return true;
-}
+        <div className="flex justify-between gap-3">
+          <dt className="text-muted-foreground">Frete</dt>
+          <dd className={SHIPPING_REAIS === 0 ? "font-semibold text-success" : undefined}>
+            {SHIPPING_REAIS === 0
+              ? "Grátis"
+              : formatReais(SHIPPING_REAIS)}
+          </dd>
+        </div>
 
-export function formatReais(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+        <div className="flex justify-between gap-3 border-t border-border pt-1 font-bold">
+          <dt>Total no pagamento</dt>
+          <dd>{formatReais(totalReais(product))}</dd>
+        </div>
+      </dl>
+
+      {/* TAMANHOS ESCOLHIDOS */}
+      {(size || shoeSize) && (
+        <div className="mt-3 rounded-xl border border-border bg-background/60 p-3 text-xs leading-relaxed">
+          <p>
+            <strong>Tamanho da camiseta:</strong>{" "}
+            {size ?? "Não selecionado"}
+          </p>
+
+          {product.shoeSizes.length > 0 && (
+            <p className="mt-1">
+              <strong>Numeração do tênis:</strong>{" "}
+              {shoeSize ?? "Não selecionada"}
+            </p>
+          )}
+
+          <p className="mt-2 text-muted-foreground">
+            Confira os tamanhos escolhidos antes de continuar.
+          </p>
+        </div>
+      )}
+
+      {/* BOTÃO */}
+      <div className="mt-4">
+        {ready && product.checkoutUrl ? (
+          <Button asChild variant="hero" size="xl">
+            <a
+              href={product.checkoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Comprar por {formatReais(totalReais(product))}
+              <ExternalLink />
+            </a>
+          </Button>
+        ) : (
+          <Button variant="hero" size="xl" disabled>
+            {linkReady
+              ? "Escolha os tamanhos"
+              : "Compra disponível em breve"}
+          </Button>
+        )}
+      </div>
+    </article>
+  );
 }
