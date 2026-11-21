@@ -26,8 +26,8 @@ export const PRODUCTS: Product[] = [
     name: "Kit quebra fina de ano 🎅🏻",
     category: "Kit Especial",
     description:
-      "Você ganhou o kit! Pague somente o frete para receber seu prêmio.",
-    priceReais: 0,
+      "Kit especial com 2 camisetas, boné e tênis. Consulte as condições de envio.",
+    priceReais: 70,
     sizes: SHIRT_SIZES,
     shoeSizes: SHOE_SIZES,
     checkoutUrl: "https://pay.cakto.com.br/39ekr5t_1350703",
@@ -37,7 +37,7 @@ export const PRODUCTS: Product[] = [
 const SHIPPING_ONLY_CHECKOUTS: string[] = [];
 
 export function totalReais(product: Product): number {
-  return SHIPPING_REAIS;
+  return product.priceReais;
 }
 
 export function isValidCheckout(url: string | null): url is string {
@@ -69,18 +69,25 @@ export function defaultSize(product: Product): string | null {
     : null;
 }
 
-// FUNÇÃO DE FUNCIONAMENTO DOS BOTÕES DE PAGAMENTO
+// Corrigido: compatível com canBuy(product, size)
 export function canBuy(
   product: Product,
   size: string | null,
-  shoeSize: string | null
+  shoeSize?: string | null
 ): boolean {
-  return (
-    size !== null &&
-    product.sizes.includes(size) &&
-    shoeSize !== null &&
-    product.shoeSizes.includes(shoeSize)
-  );
+  if (!isValidCheckout(product.checkoutUrl)) {
+    return false;
+  }
+
+  if (size === null || !product.sizes.includes(size)) {
+    return false;
+  }
+
+  if (shoeSize != null) {
+    return product.shoeSizes.includes(shoeSize);
+  }
+
+  return true;
 }
 
 export function formatReais(value: number): string {
