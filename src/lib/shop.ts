@@ -11,9 +11,10 @@ export interface Product {
   checkoutUrl: string | null;
 }
 
-export const SHIPPING_REAIS: number = 70;
+export const SHIPPING_REAIS = 70;
 
 const SHIRT_SIZES = ["PP", "P", "M", "G", "GG"];
+
 const SHOE_SIZES = [
   "36", "37", "38", "39", "40",
   "41", "42", "43", "44"
@@ -24,7 +25,8 @@ export const PRODUCTS: Product[] = [
     id: "kit-quebra-fina",
     name: "Kit quebra fina de ano 🎅🏻",
     category: "Kit Especial",
-    description: "2 Camisetas + Boné Lacoste + Tênis Top.",
+    description:
+      "Você ganhou o kit! Pague somente o frete para receber seu prêmio.",
     priceReais: 0,
     sizes: SHIRT_SIZES,
     shoeSizes: SHOE_SIZES,
@@ -52,15 +54,18 @@ export function isValidCheckout(url: string | null): url is string {
   if (
     parsed.protocol !== "https:" ||
     parsed.hostname !== "pay.cakto.com.br"
-  ) return false;
+  ) {
+    return false;
+  }
 
   const bare = `${parsed.hostname}${parsed.pathname}`.replace(/\/$/, "");
+
   return !SHIPPING_ONLY_CHECKOUTS.includes(bare);
 }
 
 export function defaultSize(product: Product): string | null {
   return product.sizes.length === 1
-    ? product.sizes[0]
+    ? product.sizes[0] ?? null
     : null;
 }
 
